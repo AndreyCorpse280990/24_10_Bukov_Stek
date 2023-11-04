@@ -2,26 +2,60 @@
 #include <stack>
 #include <string>
 
-// stack-based function for string validation
-void stack(const std::string &input)
-{
-	std::string text = input;
-	if (!text.empty())
-	{
-		if (text.find("{") && text.find("[") && text.find("("))
-		{
+void stack(const std::string& input, std::stack<char>& stackString);
 
-		}
-	}
-	else
-	{
-		std::cout << "Строка пустая" << std::endl;
-	}
+int main() 
+{
+    setlocale(LC_ALL, "rus");
+    std::string input;
+    std::stack<char> stackString;
+
+    std::cout << "Введите строку: ";
+    std::getline(std::cin, input);
+
+    stack(input, stackString);
+
+    return 0;
 }
 
-int main()
+void stack(const std::string& input, std::stack<char>& stackString)
 {
-	setlocale(LC_ALL, "rus");
-	std::string input;
-	
+
+    for (auto i = input.begin(); i != input.end(); i++)
+    {
+        if (*i == '{' || *i == '[' || *i == '(')
+        {
+            // Помещение открывающих скобок в стек
+            stackString.push(*i);
+        }
+        else if (*i == '}' || *i == ']' || *i == ')')
+        {
+            if (stackString.empty())
+            {
+                // В случае, если стек пуст и встречена закрывающая скобка, выводится ошибка
+                std::cout << "Ошибка: " << *i << " неправильная закрывающая скобка, нет соответствующей открывающей скобки!" << std::endl;
+                return;
+            }
+            else
+            {
+                char top = stackString.top();
+                stackString.pop();
+                if ((*i == '}' && top != '{') || (*i == ']' && top != '[') || (*i == ')' && top != '('))
+                {
+                    // Проверка соответствия закрывающей скобки последней открывающей
+                    std::cout << "Ошибка: " << *i << " неправильная закрывающая скобка, не соответствует открывающей скобке!" << std::endl;
+                    return;
+                }
+            }
+        }
+    }
+
+    if (!stackString.empty())
+    {
+        // В случае, если в стеке остались открывающие скобки без соответствующих закрывающих
+        std::cout << "Ошибка: Одна или несколько открывающих скобок без соответствующих закрывающих!" << std::endl;
+        return;
+    }
+
+    std::cout << "Расстановка скобок верна!" << std::endl;
 }
